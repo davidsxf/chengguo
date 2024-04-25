@@ -14,7 +14,7 @@ class Participant(models.Model):
     )
 
     name = models.CharField('姓名', max_length=20)
-    phone = models.CharField('电话', max_length=20)
+    phone = models.CharField('电话', max_length=20, blank=True,null=True)
     person_type = models.CharField('人员类型', max_length=2, choices=PERSON_TYPE)
     organ = models.ForeignKey(
         'Org',related_name='organ_participant', verbose_name='所属机构', null=True, on_delete=models.SET_NULL)
