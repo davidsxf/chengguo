@@ -1,7 +1,7 @@
 from django.db import models
 import datetime
-from staff.models import Participant
-from organ.models import Org
+from organ.models import Org, Participant
+from django.db.models import Count
 
 # Create your models here.
 
@@ -57,6 +57,16 @@ class Project(models.Model):
     status = models.CharField('项目状态',max_length=10,choices=PRPJECT_STATUS,default='Ongoing',blank=True, null=True)
 
 
+    def __str__(self):
+        return self.name
+
+
+    class Meta:
+        verbose_name = '项目'
+        verbose_name_plural = '项目'
+        
+
+
 class Participantion(models.Model):
 
     project = models.ForeignKey(
@@ -65,6 +75,14 @@ class Participantion(models.Model):
     participant = models.ForeignKey(
         Participant, on_delete=models.CASCADE, verbose_name='项目参与人')
     order = models.IntegerField('项目参与顺序', default=0)
+
+    def save(self, *args, **kwargs):
+        '''
+        自动设置项目参与顺序
+        '''
+        item_count = Participantion.objects.filter(project=self.project).count()
+        self.order = item_count + 1
+        super(Participantion, self).save(*args, **kwargs)
 
     def __str__(self):
         return "项目： {}, 项目参与人： {},项目参与顺序： {}".format(self.project.name, self.participant.name, self.order)
